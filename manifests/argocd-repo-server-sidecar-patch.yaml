@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      containers:
+      - command:
+        - /var/run/argocd/argocd-cmp-server
+        env:
+        - name: RELEASE_CHECK_URL
+          value: https://releasecheck.free.beeceptor.com/presync/checkReleaseStatus
+        - name: SERVICENOW_CHECK_URL
+          value: https://releasecheck.free.beeceptor.com/presync/checkSnowStatus
+        - name: SUBMIT_DEPLOYMENT_URL
+          value: https://releasecheck.free.beeceptor.com/presync/submitDeployment
+        - name: ORGANIZATION_NAME
+          value: OpsMx
+        - name: SSD_ARGOCD_SERVICE_TOKEN
+          value: dummy_token
+        - name: IMAGE_POLICY_JOB
+          value: utkarshopsmx/policy-job:v0.0.5
+        - name: TARGET_ENVIRONMENT
+          value: dev
+        - name: REGISTRY_CREDS
+          valueFrom:
+            secretKeyRef:
+              name: regcred
+              key: .dockerconfigjson
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.12
+        imagePullPolicy: Always
+        name: policy
+        resources: {}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          name: cmp-config
+          subPath: policy-plugin.yaml
+        - mountPath: /tmp
+          name: cmp-tmp
+      - command:
+        - /var/run/argocd/argocd-cmp-server
+        env:
+        - name: RELEASE_CHECK_URL
+          value: https://releasecheck.free.beeceptor.com/presync/checkReleaseStatus
+        - name: SERVICENOW_CHECK_URL
+          value: https://releasecheck.free.beeceptor.com/presync/checkSnowStatus
+        - name: SUBMIT_DEPLOYMENT_URL
+          value: https://releasecheck.free.beeceptor.com/presync/submitDeployment
+        - name: ORGANIZATION_NAME
+          value: OpsMx
+        - name: SSD_ARGOCD_SERVICE_TOKEN
+          value: dummy_token
+        - name: IMAGE_POLICY_JOB
+          value: utkarshopsmx/policy-job:v0.0.5
+        - name: TARGET_ENVIRONMENT
+          value: dev
+        - name: REGISTRY_CREDS
+          valueFrom:
+            secretKeyRef:
+              name: regcred
+              key: .dockerconfigjson
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.12
+        imagePullPolicy: Always
+        name: policy-kustomize
+        resources: {}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          name: cmp-config
+          subPath: policy-plugin-kustomize.yaml
+        - mountPath: /tmp
+          name: cmp-tmp
+      - command:
+        - /var/run/argocd/argocd-cmp-server
+        env:
+        - name: RELEASE_CHECK_URL
+          value: https://releasecheck.free.beeceptor.com/presync/checkReleaseStatus
+        - name: SERVICENOW_CHECK_URL
+          value: https://releasecheck.free.beeceptor.com/presync/checkSnowStatus
+        - name: SUBMIT_DEPLOYMENT_URL
+          value: https://releasecheck.free.beeceptor.com/presync/submitDeployment
+        - name: ORGANIZATION_NAME
+          value: OpsMx
+        - name: SSD_ARGOCD_SERVICE_TOKEN
+          value: dummy_token
+        - name: IMAGE_POLICY_JOB
+          value: utkarshopsmx/policy-job:v0.0.5
+        - name: TARGET_ENVIRONMENT
+          value: dev
+        - name: REGISTRY_CREDS
+          valueFrom:
+            secretKeyRef:
+              name: regcred
+              key: .dockerconfigjson
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.12
+        imagePullPolicy: Always
+        name: policy-helm
+        resources: {}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          name: cmp-config
+          subPath: policy-plugin-helm.yaml
+        - mountPath: /tmp
+          name: cmp-tmp
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: cmp-config
+        name: cmp-config
+      - emptyDir: {}
+        name: cmp-tmp
