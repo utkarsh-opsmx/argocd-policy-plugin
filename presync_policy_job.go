@@ -77,7 +77,7 @@ func splitImageName(image string) (imageName, imageTag string) {
 }
 
 func preparePresyncCommand(payloads []string) []string {
-	command := []string{"policy-job", "-u", releaseCheckUrl, "-t", token, "-s", servicenowCheckUrl, "-c", gitMessage, "-b", gitBranch, "--sync-type", "presync"}
+	command := []string{"policy-job", "-u", releaseCheckUrl, "-t", token, "-s", servicenowCheckUrl, "-c", gitMessage, "-b", gitBranch, "--sync-type", "presync", "--seal-id", "sample-seal-id", "--deployment-id", "deployment-id"}
 	for _, payload := range payloads {
 		command = append(command, "-p", payload)
 	}
