@@ -15,8 +15,15 @@ const (
 	timeout    = 5
 )
 
+type RegistryAuth struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Auth     string `json:"auth"`
+}
+
 type Creds struct {
-	auths				map[string]map[string]string `json:"auths"`
+	Auths				map[string]RegistryAuth `json:"auths"`
 }
 
 // type DockerLabels struct {
@@ -27,16 +34,16 @@ type Creds struct {
 // 	labels				ArtifactData `json:"labels"`
 // }
 
-type ArtifactData struct {
-	jetId				string `json:"jet-id"`
-	sealId				string `json:"seal_Id"`
-	projectName 		string `json:"project_key"`
-}
+// type ArtifactData struct {
+// 	JetId				string `json:"jet-id"`
+// 	SealId				string `json:"seal_Id"`
+// 	ProjectName 		string `json:"project_key"`
+// }
 
 type FileInfo struct {
-	created				string `json:"created"`
-	checksums			map[string]string `json:"checksums"`
-	downloadUri			string `json:"downloadUri"`
+	Created				string `json:"created"`
+	Checksums			map[string]string `json:"checksums"`
+	DownloadUri			string `json:"downloadUri"`
 }
 
 func init() {
@@ -59,14 +66,14 @@ func getImageMetaDatas(images []string) ([]ImageMetaData, error) {
 		return []ImageMetaData{}, fmt.Errorf("docker registry creds secret not found!")
 	}
 
-	creds :=  Creds{}
-	err := json.Unmarshal([]byte(credsFromEnv), &creds)
-	if err != nil {
+	var creds Creds
+	if err := json.Unmarshal([]byte(credsFromEnv), &creds); err != nil {
 		return []ImageMetaData{}, err
 	}
-	for key, value := range creds.auths {
+	for key, value := range creds.Auths {
 		regUrl = key
-		regToken = value["auth"]
+		regToken = value.Auth
+		break
 	}
 
 	imageMetaDatas := []ImageMetaData{}
@@ -115,9 +122,9 @@ func getJFrogFileInfo(imageMetaData *ImageMetaData, regUrl string, image string,
 	if err := json.Unmarshal(content, &fileInfo); err != nil {
 		return err
 	}
-	imageMetaData.artifactLocation = fileInfo.downloadUri
-	imageMetaData.ArtifactCreateDate = fileInfo.created
-	imageMetaData.ArtifactId = fileInfo.checksums["sha256"]
+	imageMetaData.artifactLocation = fileInfo.DownloadUri
+	imageMetaData.ArtifactCreateDate = fileInfo.Created
+	imageMetaData.ArtifactId = fileInfo.Checksums["sha256"]
 
 	return nil
 }

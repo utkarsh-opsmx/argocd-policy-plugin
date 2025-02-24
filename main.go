@@ -117,7 +117,7 @@ var rootCmd = &cobra.Command{
 
 		imageMetaDatas, err := getImageMetaDatas(images)
 		if err != nil {
-			return fmt.Errorf("error while fetching metadata from docker registry %v", err)
+			return fmt.Errorf("error while fetching image metadata from docker registry %v", err)
 		}
 
 		payloads, err := preparePayloads(images, imageMetaDatas)
