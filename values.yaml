@@ -9,7 +9,7 @@ repoServer:
        - name: SUBMIT_DEPLOYMENT_URL
          value: http://policy-service.argocd:8092/postsync/submitDeployment
        - name: ORGANIZATION_NAME
-         value: OpsMx
+         value: dummy
        - name: SSD_ARGOCD_SERVICE_TOKEN
          value: dummy_token
        - name: IMAGE_POLICY_JOB
@@ -51,7 +51,7 @@ repoServer:
         - name: SUBMIT_DEPLOYMENT_URL
           value: http://policy-service.argocd:8092/postsync/submitDeployment
         - name: ORGANIZATION_NAME
-          value: OpsMx
+          value: dummy
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
@@ -84,68 +84,7 @@ repoServer:
             subPath: policy-plugin-helm.yaml
           - mountPath: /tmp
             name: cmp-tmp
-
-      
-
-  name: repo-server
-
-  replicas: 1
-
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPUUtilizationPercentage: 50
-    targetMemoryUtilizationPercentage: 50
-
-  image:
-    repository: # argoproj/argocd
-    tag: # v1.7.11
-    imagePullPolicy: # IfNotPresent
-
-  ## Additional command line arguments to pass to argocd-repo-server
-  ##
-  extraArgs: []
-
-  ## Environment variables to pass to argocd-repo-server
-  ##
-  env: []
-
-  ## Argo repoServer log format: text|json
-  logFormat: text
-  ## Argo repoServer log level
-  logLevel: info
-
-  ## Annotations to be added to repo server pods
-  ##
-  podAnnotations: {}
-
-  ## Labels to be added to repo server pods
-  ##
-  podLabels: {}
-
-  ## Configures the repo server port
-  containerPort: 8081
-
-  ## Readiness and liveness probes for default backend
-  ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-  ##
-  readinessProbe:
-    failureThreshold: 3
-    initialDelaySeconds: 10
-    periodSeconds: 10
-    successThreshold: 1
-    timeoutSeconds: 1
-  livenessProbe:
-    failureThreshold: 3
-    initialDelaySeconds: 10
-    periodSeconds: 10
-    successThreshold: 1
-    timeoutSeconds: 1
-
-  ## Additional volumeMounts to the repo server main container.
-  volumeMounts: []
-
+            
   ## Additional volumes to the repo server pod.
   volumes: 
       - configMap:
