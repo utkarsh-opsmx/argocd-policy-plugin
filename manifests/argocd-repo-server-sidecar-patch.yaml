@@ -10,17 +10,17 @@ spec:
         - /var/run/argocd/argocd-cmp-server
         env:
         - name: RELEASE_CHECK_URL
-          value: https://releasecheck.free.beeceptor.com/presync/checkReleaseStatus
+          value: http://policy-service.ARGOCD_NAMESPACE_NAMESPACE:8092/presync/checkReleaseStatus
         - name: SERVICENOW_CHECK_URL
-          value: https://releasecheck.free.beeceptor.com/presync/checkSnowStatus
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkSnowStatus
         - name: SUBMIT_DEPLOYMENT_URL
-          value: https://releasecheck.free.beeceptor.com/presync/submitDeployment
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/postsync/submitDeployment
         - name: ORGANIZATION_NAME
           value: OpsMx
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
-          value: utkarshopsmx/policy-job:v0.0.5
+          value: utkarshopsmx/policy-job:v0.0.12
         - name: TARGET_ENVIRONMENT
           value: dev
         - name: REGISTRY_CREDS
@@ -28,7 +28,7 @@ spec:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.12
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.21
         imagePullPolicy: Always
         name: policy
         resources: {}
@@ -51,17 +51,17 @@ spec:
         - /var/run/argocd/argocd-cmp-server
         env:
         - name: RELEASE_CHECK_URL
-          value: https://releasecheck.free.beeceptor.com/presync/checkReleaseStatus
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkReleaseStatus
         - name: SERVICENOW_CHECK_URL
-          value: https://releasecheck.free.beeceptor.com/presync/checkSnowStatus
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkSnowStatus
         - name: SUBMIT_DEPLOYMENT_URL
-          value: https://releasecheck.free.beeceptor.com/presync/submitDeployment
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/postsync/submitDeployment
         - name: ORGANIZATION_NAME
           value: OpsMx
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
-          value: utkarshopsmx/policy-job:v0.0.5
+          value: utkarshopsmx/policy-job:v0.0.12
         - name: TARGET_ENVIRONMENT
           value: dev
         - name: REGISTRY_CREDS
@@ -69,7 +69,7 @@ spec:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.12
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.21
         imagePullPolicy: Always
         name: policy-kustomize
         resources: {}
@@ -92,17 +92,17 @@ spec:
         - /var/run/argocd/argocd-cmp-server
         env:
         - name: RELEASE_CHECK_URL
-          value: https://releasecheck.free.beeceptor.com/presync/checkReleaseStatus
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkReleaseStatus
         - name: SERVICENOW_CHECK_URL
-          value: https://releasecheck.free.beeceptor.com/presync/checkSnowStatus
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkSnowStatus
         - name: SUBMIT_DEPLOYMENT_URL
-          value: https://releasecheck.free.beeceptor.com/presync/submitDeployment
+          value: http://policy-service.ARGOCD_NAMESPACE:8092/postsync/submitDeployment
         - name: ORGANIZATION_NAME
           value: OpsMx
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
-          value: utkarshopsmx/policy-job:v0.0.5
+          value: utkarshopsmx/policy-job:v0.0.12
         - name: TARGET_ENVIRONMENT
           value: dev
         - name: REGISTRY_CREDS
@@ -110,7 +110,7 @@ spec:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.12
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.21
         imagePullPolicy: Always
         name: policy-helm
         resources: {}

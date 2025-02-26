@@ -14,7 +14,7 @@ data:
       generate:
         command: [sh, -c]
         args:
-        - kustomize build . | argocd-policy-plugin - --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" --custom "$(env)"
+        - kustomize build . | argocd-policy-plugin - --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" 
       lockRepo: false
   policy-plugin-helm.yaml: |
     ---
@@ -36,7 +36,7 @@ data:
           - "-c"
           - |
             helm template $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE . |
-            argocd-policy-plugin - --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" --custom "$(env)"
+            argocd-policy-plugin - --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" 
       lockRepo: false
   policy-plugin.yaml: |
     apiVersion: argoproj.io/v1alpha1
@@ -47,7 +47,7 @@ data:
       generate:
         command: [sh, -c]
         args:
-        - argocd-policy-plugin . --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" --custom "$(env)"
+        - argocd-policy-plugin . --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" 
       discover:
         fileName: "*.yaml"
       lockRepo: false

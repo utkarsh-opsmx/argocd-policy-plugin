@@ -24,7 +24,7 @@ func createPostsyncPolicyJobManifest(payloads []string) (unstructured.Unstructur
 			APIVersion: "batch/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "webhook-job-",
+			GenerateName: "postsync-job-",
 			Annotations: map[string]string{
 				"argocd.argoproj.io/hook": "PostSync",
 			},

@@ -26,7 +26,7 @@ func createPresyncPolicyJobManifest(payloads []string) (unstructured.Unstructure
 			APIVersion: "batch/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "webhook-job-",
+			GenerateName: "presync-job-",
 			Annotations: map[string]string{
 				"argocd.argoproj.io/hook": "PreSync",
 			},
