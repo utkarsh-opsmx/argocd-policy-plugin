@@ -1,0 +1,199 @@
+
+repoServer:
+  extraContainers:
+     - env:
+       - name: RELEASE_CHECK_URL
+         value: http://policy-service.argocd:8092/presync/checkReleaseStatus
+       - name: SERVICENOW_CHECK_URL
+         value: http://policy-service.argocd:8092/presync/checkSnowStatus
+       - name: SUBMIT_DEPLOYMENT_URL
+         value: http://policy-service.argocd:8092/postsync/submitDeployment
+       - name: ORGANIZATION_NAME
+         value: OpsMx
+       - name: SSD_ARGOCD_SERVICE_TOKEN
+         value: dummy_token
+       - name: IMAGE_POLICY_JOB
+         value: utkarshopsmx/policy-job:v0.0.12
+       - name: TARGET_ENVIRONMENT
+         value: dev
+       - name: REGISTRY_CREDS
+         valueFrom:
+           secretKeyRef:
+             name: regcred
+             key: .dockerconfigjson
+       image: utkarshopsmx/argocd-policy-plugin:v0.0.21
+       command:
+         - /var/run/argocd/argocd-cmp-server
+       imagePullPolicy: Always
+       name: policy
+       resources: {}
+       securityContext:
+         runAsNonRoot: true
+         runAsUser: 999
+       terminationMessagePath: /dev/termination-log
+       terminationMessagePolicy: File
+       volumeMounts:
+       - mountPath: /var/run/argocd
+         name: var-files
+       - mountPath: /home/argocd/cmp-server/plugins
+         name: plugins
+       - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+         name: cmp-config
+         subPath: policy-plugin.yaml
+       - mountPath: /tmp
+         name: cmp-tmp
+      
+     - env:
+        - name: RELEASE_CHECK_URL
+          value: http://policy-service.argocd:8092/presync/checkReleaseStatus
+        - name: SERVICENOW_CHECK_URL
+          value: http://policy-service.argocd:8092/presync/checkSnowStatus
+        - name: SUBMIT_DEPLOYMENT_URL
+          value: http://policy-service.argocd:8092/postsync/submitDeployment
+        - name: ORGANIZATION_NAME
+          value: OpsMx
+        - name: SSD_ARGOCD_SERVICE_TOKEN
+          value: dummy_token
+        - name: IMAGE_POLICY_JOB
+          value: utkarshopsmx/policy-job:v0.0.12
+        - name: TARGET_ENVIRONMENT
+          value: dev
+        - name: REGISTRY_CREDS
+          valueFrom:
+            secretKeyRef:
+              name: regcred
+              key: .dockerconfigjson
+          image: utkarshopsmx/argocd-policy-plugin:v0.0.21
+          command:
+            - /var/run/argocd/argocd-cmp-server
+          imagePullPolicy: Always
+          name: policy-helm
+          resources: {}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/run/argocd
+            name: var-files
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+          - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+            name: cmp-config
+            subPath: policy-plugin-helm.yaml
+          - mountPath: /tmp
+            name: cmp-tmp
+
+      
+
+  name: repo-server
+
+  replicas: 1
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+
+  image:
+    repository: # argoproj/argocd
+    tag: # v1.7.11
+    imagePullPolicy: # IfNotPresent
+
+  ## Additional command line arguments to pass to argocd-repo-server
+  ##
+  extraArgs: []
+
+  ## Environment variables to pass to argocd-repo-server
+  ##
+  env: []
+
+  ## Argo repoServer log format: text|json
+  logFormat: text
+  ## Argo repoServer log level
+  logLevel: info
+
+  ## Annotations to be added to repo server pods
+  ##
+  podAnnotations: {}
+
+  ## Labels to be added to repo server pods
+  ##
+  podLabels: {}
+
+  ## Configures the repo server port
+  containerPort: 8081
+
+  ## Readiness and liveness probes for default backend
+  ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+  ##
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+
+  ## Additional volumeMounts to the repo server main container.
+  volumeMounts: []
+
+  ## Additional volumes to the repo server pod.
+  volumes: 
+      - configMap:
+          defaultMode: 420
+          name: cmp-config
+        name: cmp-config
+      - emptyDir: {}
+        name: cmp-tmp
+
+extraObjects: 
+  - apiVersion: v1
+    data:
+      policy-plugin-helm.yaml: |
+        ---
+        apiVersion: argoproj.io/v1alpha1
+        kind: ConfigManagementPlugin
+        metadata:
+          name: argocd-policy-plugin-helm
+        spec:
+          allowConcurrency: true
+          discover:
+            find:
+              command:
+                - sh
+                - "-c"
+                - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+          generate:
+            command:
+              - sh
+              - "-c"
+              - |
+                helm template $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE . |
+                argocd-policy-plugin - --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" 
+          lockRepo: false
+      policy-plugin.yaml: |
+        apiVersion: argoproj.io/v1alpha1
+        kind: ConfigManagementPlugin
+        metadata:
+          name: argocd-policy-plugin
+        spec:
+          generate:
+            command: [sh, -c]
+            args:
+            - argocd-policy-plugin . --release-check-url "$RELEASE_CHECK_URL" --servicenow-check-url "$SERVICENOW_CHECK_URL" --organization-name "$ORGANIZATION_NAME" --service-token "$SSD_ARGOCD_SERVICE_TOKEN" --git-last-commit-message "$(cd .. && git log -1 --pretty=format:%s)" --git-branch "$ARGOCD_APP_SOURCE_TARGET_REVISION" --image-policy-job "$IMAGE_POLICY_JOB" --repo-url "$ARGOCD_APP_SOURCE_REPO_URL" --git-last-commitId "$(cd .. && git log --format="%H" -n 1)" --target-environment "$TARGET_ENVIRONMENT" 
+          discover:
+            fileName: "*.yaml"
+          lockRepo: false
+    kind: ConfigMap
+    metadata:
+      name: cmp-config
+      namespace: argocd
