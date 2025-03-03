@@ -39,7 +39,7 @@ type ImageMetaData struct {
 	artifactLocation			string `json:"artifactLocation"`
 }
 
-var releaseCheckUrl, servicenowCheckUrl, organization, token, gitMessage, gitBranch, imagePolicyJob, argocdAppName, string
+var releaseCheckUrl, servicenowCheckUrl, organization, token, gitMessage, gitBranch, imagePolicyJob, argocdAppName string
 var submitDeploymentUrl, repoUrl, gitLastCommitId, targetEnvironment string
 var custom, deploymentId, sealId string
 
