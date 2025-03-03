@@ -10,11 +10,11 @@ spec:
         - /var/run/argocd/argocd-cmp-server
         env:
         - name: RELEASE_CHECK_URL
-          value: http://policy-service.ARGOCD_NAMESPACE_NAMESPACE:8092/presync/checkReleaseStatus
+          value: http://policy-service.argocd:8092/presync/checkReleaseStatus
         - name: SERVICENOW_CHECK_URL
-          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkSnowStatus
+          value: http://policy-service.argocd:8092/presync/checkSnowStatus
         - name: SUBMIT_DEPLOYMENT_URL
-          value: http://policy-service.ARGOCD_NAMESPACE:8092/postsync/submitDeployment
+          value: http://policy-service.argocd:8092/postsync/submitDeployment
         - name: ORGANIZATION_NAME
           value: OpsMx
         - name: SSD_ARGOCD_SERVICE_TOKEN
@@ -28,7 +28,7 @@ spec:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.21
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.23
         imagePullPolicy: Always
         name: policy
         resources: {}
@@ -51,11 +51,11 @@ spec:
         - /var/run/argocd/argocd-cmp-server
         env:
         - name: RELEASE_CHECK_URL
-          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkReleaseStatus
+          value: http://policy-service.argocd:8092/presync/checkReleaseStatus
         - name: SERVICENOW_CHECK_URL
-          value: http://policy-service.ARGOCD_NAMESPACE:8092/presync/checkSnowStatus
+          value: http://policy-service.argocd:8092/presync/checkSnowStatus
         - name: SUBMIT_DEPLOYMENT_URL
-          value: http://policy-service.ARGOCD_NAMESPACE:8092/postsync/submitDeployment
+          value: http://policy-service.argocd:8092/postsync/submitDeployment
         - name: ORGANIZATION_NAME
           value: OpsMx
         - name: SSD_ARGOCD_SERVICE_TOKEN
@@ -69,7 +69,48 @@ spec:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.21
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.23
+        imagePullPolicy: Always
+        name: policy-kustomize
+        resources: {}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          name: cmp-config
+          subPath: policy-plugin-kustomize.yaml
+        - mountPath: /tmp
+          name: cmp-tmp
+      - command:
+        - /var/run/argocd/argocd-cmp-server
+        env:
+        - name: RELEASE_CHECK_URL
+          value: http://policy-service.argocd:8092/presync/checkReleaseStatus
+        - name: SERVICENOW_CHECK_URL
+          value: http://policy-service.argocd:8092/presync/checkSnowStatus
+        - name: SUBMIT_DEPLOYMENT_URL
+          value: http://policy-service.argocd:8092/postsync/submitDeployment
+        - name: ORGANIZATION_NAME
+          value: OpsMx
+        - name: SSD_ARGOCD_SERVICE_TOKEN
+          value: dummy_token
+        - name: IMAGE_POLICY_JOB
+          value: utkarshopsmx/policy-job:v0.0.12
+        - name: TARGET_ENVIRONMENT
+          value: dev
+        - name: REGISTRY_CREDS
+          valueFrom:
+            secretKeyRef:
+              name: regcred
+              key: .dockerconfigjson
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.23
         imagePullPolicy: Always
         name: policy-helm
         resources: {}

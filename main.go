@@ -35,14 +35,13 @@ type ImageMetaData struct {
 	ArtifactCreateDate			string `json:"artifactCreateDate"`
 	JetId						string `json:"jetId"`
 	SealId						string `json:"sealId"`
-	DeploymentId				string `json:"deploymentId"`
 	ProjectName					string `json:"projectName"`
 	artifactLocation			string `json:"artifactLocation"`
 }
 
-var releaseCheckUrl, servicenowCheckUrl, organization, token, gitMessage, gitBranch, imagePolicyJob string
+var releaseCheckUrl, servicenowCheckUrl, organization, token, gitMessage, gitBranch, imagePolicyJob, argocdAppName, string
 var submitDeploymentUrl, repoUrl, gitLastCommitId, targetEnvironment string
-var custom string
+var custom, deploymentId, sealId string
 
 var rootCmd = &cobra.Command{
 	Use:   "argocd-policy-plugin <path>",
@@ -91,6 +90,7 @@ var rootCmd = &cobra.Command{
 				return err
 			}
 		} else {
+			// This is supposed to work for simple kubernetes objects files with images but wont work for application spec since it  contains sources not images 
 			files, err := getFilesOfTypeYamlJson(path)
 			if len(files) < 1 {
 				return fmt.Errorf("no YAML or JSON files were found in %s", path)
@@ -119,7 +119,9 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("error while fetching image metadata from docker registry %v", err)
 		}
-
+		if err := getDeploymentIdAndSealId(); err != nil {
+			return fmt.Errorf("error while fetching deploymentId and sealId from application manifest: %v", err)
+		}
 		payloads, err := preparePayloads(images, imageMetaDatas)
 		if err != nil {
 			return fmt.Errorf("error while preparing payload for the job: %v", err)
@@ -171,6 +173,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&gitLastCommitId, "git-last-commitId", "", "", "git last commitId")
 	rootCmd.Flags().StringVarP(&targetEnvironment, "target-environment", "", "", "target environment")
 	rootCmd.Flags().StringVarP(&custom, "custom","","", "custom variable for debugging")
+	rootCmd.Flags().StringVarP(&argocdAppName, "argocd-app-name","","", "argocd application on which the plugin is applied")
 }
 
 func main() {
@@ -199,7 +202,7 @@ func preparePayload(image string, imageMetaData ImageMetaData) (string, error) {
 		ArtifactCreateDate			: imageMetaData.ArtifactCreateDate,
 		JetId						: imageMetaData.JetId,
 		SealId						: imageMetaData.SealId,
-		DeploymentId				: imageMetaData.DeploymentId,
+		DeploymentId				: deploymentId,
 		ProjectName					: imageMetaData.ProjectName,
 		artifactLocation			: imageMetaData.artifactLocation,
 	}
