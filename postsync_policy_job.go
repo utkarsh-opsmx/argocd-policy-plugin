@@ -44,7 +44,7 @@ func createPostsyncPolicyJobManifest(payloads []string) (unstructured.Unstructur
 							Command: command,
 						},
 					},
-					ServiceAccountName: "policy-job-account-name",
+					ServiceAccountName: "policy-job-service-account",
 					RestartPolicy: v1.RestartPolicyNever,
 				},
 			},

@@ -46,7 +46,7 @@ func createPresyncPolicyJobManifest(payloads []string) (unstructured.Unstructure
 							Command: command,
 						},
 					},
-					ServiceAccountName: "policy-job-account-name",
+					ServiceAccountName: "policy-job-service-account",
 					RestartPolicy: v1.RestartPolicyNever,
 				},
 			},
