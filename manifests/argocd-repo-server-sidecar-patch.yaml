@@ -20,15 +20,17 @@ spec:
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
-          value: utkarshopsmx/policy-job:v0.0.12
+          value: utkarshopsmx/policy-job:v0.0.19
         - name: TARGET_ENVIRONMENT
           value: dev
+        - name: ARGOCD_NAMESPACE
+          value: argocd
         - name: REGISTRY_CREDS
           valueFrom:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.23
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.27
         imagePullPolicy: Always
         name: policy
         resources: {}
@@ -61,15 +63,17 @@ spec:
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
-          value: utkarshopsmx/policy-job:v0.0.12
+          value: utkarshopsmx/policy-job:v0.0.19
         - name: TARGET_ENVIRONMENT
           value: dev
+        - name: ARGOCD_NAMESPACE
+          value: argocd
         - name: REGISTRY_CREDS
           valueFrom:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.23
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.27
         imagePullPolicy: Always
         name: policy-kustomize
         resources: {}
@@ -102,15 +106,17 @@ spec:
         - name: SSD_ARGOCD_SERVICE_TOKEN
           value: dummy_token
         - name: IMAGE_POLICY_JOB
-          value: utkarshopsmx/policy-job:v0.0.12
+          value: utkarshopsmx/policy-job:v0.0.19
         - name: TARGET_ENVIRONMENT
           value: dev
+        - name: ARGOCD_NAMESPACE
+          value: argocd
         - name: REGISTRY_CREDS
           valueFrom:
             secretKeyRef:
               name: regcred
               key: .dockerconfigjson
-        image: utkarshopsmx/argocd-policy-plugin:v0.0.23
+        image: utkarshopsmx/argocd-policy-plugin:v0.0.27
         imagePullPolicy: Always
         name: policy-helm
         resources: {}

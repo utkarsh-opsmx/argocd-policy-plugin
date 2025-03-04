@@ -41,7 +41,8 @@ type ImageMetaData struct {
 
 var releaseCheckUrl, servicenowCheckUrl, organization, token, gitMessage, gitBranch, imagePolicyJob, argocdAppName string
 var submitDeploymentUrl, repoUrl, gitLastCommitId, targetEnvironment string
-var custom, deploymentId, sealId string
+var custom, deploymentId, sealId, applicationSpecLabels string
+var argocdNamespace string
 
 var rootCmd = &cobra.Command{
 	Use:   "argocd-policy-plugin <path>",
@@ -119,9 +120,10 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("error while fetching image metadata from docker registry %v", err)
 		}
-		if err := getDeploymentIdAndSealId(); err != nil {
-			return fmt.Errorf("error while fetching deploymentId and sealId from application manifest: %v", err)
-		}
+		// if err := getDeploymentIdAndSealId(); err != nil {
+		// 	return fmt.Errorf("error while fetching deploymentId and sealId from application manifest: %v", err)
+		// }
+		// return fmt.Errorf("%s %s", sealId, deploymentId)
 		payloads, err := preparePayloads(images, imageMetaDatas)
 		if err != nil {
 			return fmt.Errorf("error while preparing payload for the job: %v", err)
@@ -174,6 +176,8 @@ func init() {
 	rootCmd.Flags().StringVarP(&targetEnvironment, "target-environment", "", "", "target environment")
 	rootCmd.Flags().StringVarP(&custom, "custom","","", "custom variable for debugging")
 	rootCmd.Flags().StringVarP(&argocdAppName, "argocd-app-name","","", "argocd application on which the plugin is applied")
+	rootCmd.Flags().StringVarP(&argocdNamespace, "argocd-namespace","","", "namespace where argocd is installed")
+	// rootCmd.Flags().StringVarP(&applicationSpecLabels, "app-spec-labels-json","","", "json of labels in metadata of application spec")
 }
 
 func main() {
@@ -202,7 +206,7 @@ func preparePayload(image string, imageMetaData ImageMetaData) (string, error) {
 		ArtifactCreateDate			: imageMetaData.ArtifactCreateDate,
 		JetId						: imageMetaData.JetId,
 		SealId						: imageMetaData.SealId,
-		DeploymentId				: deploymentId,
+		DeploymentId				: "filler",
 		ProjectName					: imageMetaData.ProjectName,
 		artifactLocation			: imageMetaData.artifactLocation,
 	}
